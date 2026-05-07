@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOC Belong & Perform Assessment Prototype</title>
+  <style>
+    :root {
+      --primary: #daff95;
+      --primary-light: #d88585;
+      --accent: #b04e4e;
+      --text: #3a3a3b;
+      --text-light: #3a3a3b;
+      --bg: #f4f4f4;
+      --card: #ffffff;
+      --border: #e8e4dd;
+      --success: #daff95;
+      --neutral: #ffe899;
+      --warning: #ffd0d0;
+      --info: #e8f1ff;
+      --info-border: #b7ccff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background: var(--primary);
+      color: #3a3a3b;
+      padding: 28px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: 0.95;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: var(--text-light);
+      font-weight: bold;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      background: white;
+    }
+
+    .scorebar {
+      position: sticky;
+      top: 16px;
+      z-index: 5;
+    }
+
+    .scoreline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .scorebig {
+      font-size: 2.4rem;
+      color: #3a3a3b;
+      font-weight: bold;
+    }
+
+    .area-title {
+      background: var(--primary);
+      color: #3a3a3b;
+      padding: 14px 18px;
+      border-radius: 14px 14px 0 0;
+      margin: 0;
+    }
+
+    .question {
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 18px;
+      background: white;
+    }
+
+    .question:last-child {
+      border-radius: 0 0 14px 14px;
+    }
+
+    .question-text {
+      margin-bottom: 14px;
+      font-size: 1rem;
+    }
+
+    .options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .option button {
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      min-width: 120px;
+      font-size: 0.95rem;
+    }
+
+    .option button.selected {
+      background: var(--primary);
+      color: #3a3a3b;
+      border-color: var(--primary);
+    }
+
+    .btnrow {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #3a3a3b;
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 2px solid var(--primary);
+      color: #3a3a3b;
+    }
+
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .metric h4 {
+      margin: 0 0 6px;
+      font-size: 0.95rem;
+      color: var(--text-light);
+    }
+
+    .metric .value {
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .thriving { background: var(--success); }
+    .needs-work { background: var(--neutral); }
+    .active-crisis { background: var(--warning); }
+
+    .small {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .status-box {
+      border: 1px solid var(--info-border);
+      background: var(--info);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      display: none;
+      margin-top: 14px;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-box.success {
+      background: #eefde7;
+      border-color: #b8e49d;
+      color: #245f10;
+    }
+
+    .status-box.error {
+      background: #fff0f0;
+      border-color: #f0b4b4;
+      color: #8c1e1e;
+    }
+
+    ul.compact {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+
+    @media (max-width: 720px) {
+      .grid, .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .scorebig {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>Belong & Perform Assessment Prototype</h1>
+      <p>Prototype with individual, company, and team scoring. Belonging drives performance. This assessment shows you exactly where the Six Belonging Agreements are working in your workplace — and where they're not. <a href="https://www.heartbasedleading.com/guide-belong-perform-self-assessment" target="_blank" rel="noopener noreferrer" 
+   style="display:inline-block; padding:12px 18px; background:#daff95; color:#3a3a3b; border-radius:10px; text-decoration:none; font-weight:bold;">
+  Open the Guide
+</a></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Respondent Info</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="participant-name">Name</label>
+          <input id="participant-name" type="text" placeholder="Jane Doe" />
+        </div>
+        <div class="field">
+          <label for="participant-email">Email</label>
+          <input id="participant-email" type="email" placeholder="jane@company.com" />
+        </div>
+        <div class="field">
+          <label for="participant-company">Company</label>
+          <input id="participant-company" type="text" placeholder="Acme Inc" />
+        </div>
+        <div class="field">
+          <label for="participant-team">Team</label>
+          <input id="participant-team" type="text" placeholder="Leadership, Operations, Sales..." />
+        </div>
+      </div>
+      <p class="small" style="margin-top:12px;">
+        For this prototype, saved submissions stay in the browser so you can view company and team rollups immediately.
+      </p>
+      <div id="save-status" class="status-box"></div>
+    </div>
+
+    <div class="card scorebar">
+      <div class="scoreline">
+        <div>
+          <div class="small">Current individual score</div>
+          <div class="scorebig" id="current-score">0</div>
+        </div>
+        <div>
+          <div class="small"><span id="answered-count">0</span> of 29 answered</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="assessment"></div>
+
+    <div class="card">
+      <div class="btnrow">
+        <button class="btn btn-primary" id="submit-assessment">Submit Assessment</button>
+        <button class="btn btn-secondary" id="reset-current">Reset Current Form</button>
+        <button class="btn btn-secondary" id="clear-all">Clear Saved Local Results</button>
+      </div>
+    </div>
+
+    <div class="card" id="results-card">
+      <h2 style="margin-top:0;">Current Individual Results</h2>
+      <div class="results-grid" id="individual-results"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Saved Submissions</h2>
+      <div id="saved-submissions" class="small">No submissions yet.</div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Company and Team Rollups</h2>
+      <div id="aggregate-results" class="small">Submit at least one assessment to see company and team scoring.</div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'foc_squarespace_submissions_v4';
+    const LEGACY_STORAGE_KEYS = [
+      'foc_squarespace_test_submissions_v2',
+      'focAssessmentSubmissions',
+      'focCompanyRollups',
+      'focTeamRollups',
+      'foc_squarespace_submissions_v3'
+    ];
+    const CLEANUP_FLAG_KEY = 'foc_cleanup_done_v4';
+    const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/26733048/ux67rkk/';
+
+    const areas = [
+      {
+        id: 'area1',
+        title: 'Area 1: I Belong at My Company',
+        questions: [
+          { id: 'q1a', text: "I feel for my leaders' and team members' successes, dreams, and failures. And my leaders and team members feel for me in the same way" },
+          { id: 'q1b', text: "I take ownership of my leaders' and team members' successes, dreams, and failures. And they take ownership in the same way for me" },
+          { id: 'q1c', text: "I care for my leaders' and team members' successes, dreams, and failures. And they care for me in the same way" }
+        ],
+        max: 3
+      },
+      {
+        id: 'area2',
+        title: 'Area 2: I Believe in My Company',
+        questions: [
+          { id: 'q2a', text: "I believe in my company's core values" },
+          { id: 'q2b', text: "I believe in my company's shared purpose or mission" },
+          { id: 'q2c', text: "I believe in my leadership team" },
+          { id: 'q2d', text: "I believe in my teammates" },
+          { id: 'q2e', text: "I believe in my company's strategic direction and abilities" },
+          { id: 'q2f', text: "I believe in the products and services I help provide to the world" }
+        ],
+        max: 6
+      },
+      {
+        id: 'area3',
+        title: 'Area 3: I Know and Live My Core Values and Strengths at Work',
+        questions: [
+          { id: 'q3a', text: 'I know and live my own core values and strengths in my work at my company' },
+          { id: 'q3b', text: 'I am encouraged to live my values and strengths to their fullest in my work' },
+          { id: 'q3c', text: 'I have deep personal accountability in my work at my company' }
+        ],
+        max: 3
+      },
+      {
+        id: 'area4',
+        title: "Area 4: I'm Personally Joined to the Company's Story",
+        questions: [
+          { id: 'q4a', text: "I understand my company's unique way of achieving its purpose to change the world" },
+          { id: 'q4b', text: "I embrace my company's uniqueness in its purpose" },
+          { id: 'q4c', text: "I understand how my unique strengths matter in fulfilling the company's shared purpose" },
+          { id: 'q4d', text: "My personal strategic story contributes to the company's story and shared purpose" },
+          { id: 'q4e', text: "I am accountable for my commitments and contributions to the company's shared purpose" }
+        ],
+        max: 5
+      },
+      {
+        id: 'area5',
+        title: "Area 5: I Own My Work Practices and How I'm Measured",
+        questions: [
+          { id: 'q5a', text: 'I understand the practices I need to succeed at my work' },
+          { id: 'q5b', text: 'I am provided the means to develop the people and technical skills I need to succeed' },
+          { id: 'q5c', text: 'I take ownership of my work practices, both in development and outcomes' },
+          { id: 'q5d', text: "I understand and take a majority role in defining what success looks like in my work" },
+          { id: 'q5e', text: "I play a significant part in how I'm fairly measured by my company" },
+          { id: 'q5f', text: "I'm measured and guided in ways that lead to both professional and personal growth" }
+        ],
+        max: 6
+      },
+      {
+        id: 'area6',
+        title: "Area 6: I'm Supported to Grow and Maintain Balance",
+        questions: [
+          { id: 'q6a', text: 'My growth is encouraged and assisted by my company' },
+          { id: 'q6b', text: 'I am responsible for defining and owning how I am grown' },
+          { id: 'q6c', text: "My growth benefits me personally and supports the company's purpose" },
+          { id: 'q6d', text: 'I understand and define what balance looks like between my family and work' },
+          { id: 'q6e', text: 'I am empowered to keep balance in my life between family and work' },
+          { id: 'q6f', text: 'I am successful in keeping that balance' }
+        ],
+        max: 6
+      }
+    ];
+
+    const options = [
+      { label: 'Yes', value: 1, emoji: '✅' },
+      { label: "I Don't Know", value: 0, emoji: '❓' },
+      { label: 'No', value: -1, emoji: '❌' }
+    ];
+
+    const responses = {};
+    const allQuestionIds = areas.flatMap(area => area.questions.map(q => q.id));
+    allQuestionIds.forEach(id => responses[id] = null);
+
+    function safeParse(json, fallback) {
+      try {
+        return JSON.parse(json);
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function normalizeKey(value) {
+      return (value || '').trim().toLowerCase();
+    }
+
+    function average(values) {
+      if (!values.length) return 0;
+      return values.reduce((sum, v) => sum + Number(v || 0), 0) / values.length;
+    }
+
+    function makeRecordId(participant, submittedAt) {
+      const emailPart = (participant.email || 'no-email').trim().toLowerCase();
+      return `${emailPart} — ${submittedAt}`;
+    }
+
+    function isObviousTestSubmission(item) {
+      if (!item || typeof item !== 'object') return false;
+
+      const combined = [
+        item.name,
+        item.email,
+        item.company,
+        item.team,
+        item.AssessmentEntry,
+        item.recordId
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      const testTerms = [
+        'test person',
+        'testco',
+        'load test',
+        'demo',
+        'dummy',
+        'sample',
+        'person a',
+        'person b',
+        'a@testco.com',
+        'b@testco.com'
+      ];
+
+      const hasTestTerm = testTerms.some(term => combined.includes(term));
+
+      return hasTestTerm;
+    }
+
+    function migrateAndCleanupSavedDataOnce() {
+      if (localStorage.getItem(CLEANUP_FLAG_KEY) === 'true') return;
+
+      let combined = [];
+
+      LEGACY_STORAGE_KEYS.forEach(key => {
+        const raw = localStorage.getItem(key);
+        if (!raw) return;
+        const parsed = safeParse(raw, []);
+        if (Array.isArray(parsed)) combined = combined.concat(parsed);
+      });
+
+      const currentRaw = localStorage.getItem(STORAGE_KEY);
+      if (currentRaw) {
+        const currentParsed = safeParse(currentRaw, []);
+        if (Array.isArray(currentParsed)) combined = combined.concat(currentParsed);
+      }
+
+      const deduped = [];
+      const seen = new Set();
+
+      combined.forEach(item => {
+        const dedupeKey = item && item.recordId ? item.recordId : JSON.stringify(item);
+        if (!seen.has(dedupeKey)) {
+          seen.add(dedupeKey);
+          deduped.push(item);
+        }
+      });
+
+      const cleaned = deduped.filter(item => !isObviousTestSubmission(item));
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+      localStorage.setItem(CLEANUP_FLAG_KEY, 'true');
+    }
+
+    function renderAssessment() {
+      const root = document.getElementById('assessment');
+
+      root.innerHTML = areas.map(area => `
+        <div style="margin-bottom:22px;">
+          <h3 class="area-title">${area.title}</h3>
+          ${area.questions.map(q => `
+            <div class="question">
+              <div class="question-text">${q.text}</div>
+              <div class="options">
+                ${options.map(opt => `
+                  <div class="option">
+                    <button type="button" data-question="${q.id}" data-value="${opt.value}">
+                      ${opt.emoji} ${opt.label} (${opt.value > 0 ? '+' + opt.value : opt.value})
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+
+      root.querySelectorAll('button[data-question]').forEach(button => {
+        button.addEventListener('click', () => {
+          const q = button.getAttribute('data-question');
+          const value = Number(button.getAttribute('data-value'));
+          responses[q] = value;
+          refreshButtons();
+          updateAllViews();
+        });
+      });
+    }
+
+    function refreshButtons() {
+      document.querySelectorAll('button[data-question]').forEach(button => {
+        const q = button.getAttribute('data-question');
+        const value = Number(button.getAttribute('data-value'));
+        button.classList.toggle('selected', responses[q] === value);
+      });
+    }
+
+    function calculateTotalScore(source) {
+      return allQuestionIds.reduce((sum, id) => sum + (source[id] === null ? 0 : Number(source[id])), 0);
+    }
+
+    function calculateAnsweredCount(source) {
+      return allQuestionIds.filter(id => source[id] !== null).length;
+    }
+
+    function calculateAreaScores(source) {
+      const out = {};
+      areas.forEach(area => {
+        out[area.id] = area.questions.reduce((sum, q) => sum + (source[q.id] === null ? 0 : Number(source[q.id])), 0);
+      });
+      return out;
+    }
+
+    function getBand(score, max) {
+      const pct = ((score + max) / (max * 2)) * 100;
+      if (pct >= 80) return { label: 'Thriving', className: 'thriving' };
+      if (pct >= 50) return { label: 'Needs Work', className: 'needs-work' };
+      return { label: 'Active Crisis', className: 'active-crisis' };
+    }
+
+    function getAreaLabel(areaId) {
+      const area = areas.find(a => a.id === areaId);
+      return area ? area.title : areaId;
+    }
+
+    function getStrongestAndWeakestAreas(areaScores) {
+      const entries = Object.entries(areaScores);
+      let strongest = entries[0];
+      let weakest = entries[0];
+
+      entries.forEach(entry => {
+        if (entry[1] > strongest[1]) strongest = entry;
+        if (entry[1] < weakest[1]) weakest = entry;
+      });
+
+      return {
+        strongestArea: getAreaLabel(strongest[0]),
+        strongestAreaScore: strongest[1],
+        weakestArea: getAreaLabel(weakest[0]),
+        weakestAreaScore: weakest[1]
+      };
+    }
+
+    function buildCurrentResultsSummary(totalScore, answeredCount, areaScores, strongestWeakest) {
+      return [
+        `Submitted with total score ${totalScore}`,
+        `${answeredCount} of 29 answered`,
+        `A1 ${areaScores.area1}`,
+        `A2 ${areaScores.area2}`,
+        `A3 ${areaScores.area3}`,
+        `A4 ${areaScores.area4}`,
+        `A5 ${areaScores.area5}`,
+        `A6 ${areaScores.area6}`,
+        `Strongest: ${strongestWeakest.strongestArea} (${strongestWeakest.strongestAreaScore})`,
+        `Weakest: ${strongestWeakest.weakestArea} (${strongestWeakest.weakestAreaScore})`
+      ].join(' | ');
+    }
+
+    function loadSaved() {
+      return safeParse(localStorage.getItem(STORAGE_KEY) || '[]', []);
+    }
+
+    function saveAll(submissions) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+    }
+
+    function clearCurrentForm() {
+      document.getElementById('participant-name').value = '';
+      document.getElementById('participant-email').value = '';
+      document.getElementById('participant-company').value = '';
+      document.getElementById('participant-team').value = '';
+
+      allQuestionIds.forEach(id => responses[id] = null);
+      refreshButtons();
+      clearStatus();
+      updateAllViews();
+    }
+
+    function getRollupSnapshot(currentPayload) {
+      const allSubmissions = [...loadSaved(), currentPayload];
+
+      const companyKey = normalizeKey(currentPayload.company);
+      const teamKey = normalizeKey(currentPayload.team);
+
+      let companySubmissions = [];
+      let teamSubmissions = [];
+
+      if (companyKey) {
+        companySubmissions = allSubmissions.filter(item => normalizeKey(item.company) === companyKey);
+      }
+
+      if (companyKey && teamKey) {
+        teamSubmissions = allSubmissions.filter(item =>
+          normalizeKey(item.company) === companyKey &&
+          normalizeKey(item.team) === teamKey
+        );
+      }
+
+      const companyAvgTotal = companySubmissions.length
+        ? Number(average(companySubmissions.map(s => Number(s.totalScore || 0))).toFixed(2))
+        : '';
+
+      const teamAvgTotal = teamSubmissions.length
+        ? Number(average(teamSubmissions.map(s => Number(s.totalScore || 0))).toFixed(2))
+        : '';
+
+      const companyAreaSummary = companySubmissions.length
+        ? areas.map(area => {
+            const avg = average(companySubmissions.map(s => Number((s.areaScores && s.areaScores[area.id]) || 0)));
+            return `${area.title}: ${avg.toFixed(2)}/${area.max}`;
+          }).join(' | ')
+        : '';
+
+      const teamAreaSummary = teamSubmissions.length
+        ? areas.map(area => {
+            const avg = average(teamSubmissions.map(s => Number((s.areaScores && s.areaScores[area.id]) || 0)));
+            return `${area.title}: ${avg.toFixed(2)}/${area.max}`;
+          }).join(' | ')
+        : '';
+
+      return {
+        companyRollupAverageTotal: companyAvgTotal,
+        teamRollupAverageTotal: teamAvgTotal,
+        companyRollupSummary: companyAreaSummary,
+        teamRollupSummary: teamAreaSummary
+      };
+    }
+
+    function getCurrentPayload() {
+      const participant = {
+        name: document.getElementById('participant-name').value.trim(),
+        email: document.getElementById('participant-email').value.trim(),
+        company: document.getElementById('participant-company').value.trim(),
+        team: document.getElementById('participant-team').value.trim()
+      };
+
+      const submittedAt = new Date().toISOString();
+      const areaScores = calculateAreaScores(responses);
+      const totalScore = calculateTotalScore(responses);
+      const answeredCount = calculateAnsweredCount(responses);
+      const strongestWeakest = getStrongestAndWeakestAreas(areaScores);
+      const recordId = makeRecordId(participant, submittedAt);
+
+      const basePayload = {
+        AssessmentEntry: `${participant.name || 'Unnamed'} — ${new Date(submittedAt).toLocaleString()}`,
+        ...participant,
+        submittedAt: submittedAt,
+        recordId: recordId,
+        totalScore: totalScore,
+        answeredCount: answeredCount,
+        Area1: areaScores.area1,
+        Area2: areaScores.area2,
+        Area3: areaScores.area3,
+        Area4: areaScores.area4,
+        Area5: areaScores.area5,
+        Area6: areaScores.area6,
+        strongestArea: strongestWeakest.strongestArea,
+        strongestAreaScore: strongestWeakest.strongestAreaScore,
+        weakestArea: strongestWeakest.weakestArea,
+        weakestAreaScore: strongestWeakest.weakestAreaScore,
+        currentResultsSummary: buildCurrentResultsSummary(totalScore, answeredCount, areaScores, strongestWeakest),
+
+        q1a: responses.q1a,
+        q1b: responses.q1b,
+        q1c: responses.q1c,
+        q2a: responses.q2a,
+        q2b: responses.q2b,
+        q2c: responses.q2c,
+        q2d: responses.q2d,
+        q2e: responses.q2e,
+        q2f: responses.q2f,
+        q3a: responses.q3a,
+        q3b: responses.q3b,
+        q3c: responses.q3c,
+        q4a: responses.q4a,
+        q4b: responses.q4b,
+        q4c: responses.q4c,
+        q4d: responses.q4d,
+        q4e: responses.q4e,
+        q5a: responses.q5a,
+        q5b: responses.q5b,
+        q5c: responses.q5c,
+        q5d: responses.q5d,
+        q5e: responses.q5e,
+        q5f: responses.q5f,
+        q6a: responses.q6a,
+        q6b: responses.q6b,
+        q6c: responses.q6c,
+        q6d: responses.q6d,
+        q6e: responses.q6e,
+        q6f: responses.q6f,
+
+        areaScores: areaScores,
+        responses: { ...responses }
+      };
+
+      return {
+        ...basePayload,
+        ...getRollupSnapshot(basePayload)
+      };
+    }
+
+    function getWebhookPayload(fullPayload) {
+      return {
+        AssessmentEntry: fullPayload.AssessmentEntry,
+        recordId: fullPayload.recordId,
+        name: fullPayload.name,
+        email: fullPayload.email,
+        company: fullPayload.company,
+        team: fullPayload.team,
+        submittedAt: fullPayload.submittedAt,
+        totalScore: fullPayload.totalScore,
+        answeredCount: fullPayload.answeredCount,
+
+        Area1: fullPayload.Area1,
+        Area2: fullPayload.Area2,
+        Area3: fullPayload.Area3,
+        Area4: fullPayload.Area4,
+        Area5: fullPayload.Area5,
+        Area6: fullPayload.Area6,
+
+        strongestArea: fullPayload.strongestArea,
+        StrongestAreaScore: fullPayload.strongestAreaScore,
+        weakestArea: fullPayload.weakestArea,
+        WeakestAreaScore: fullPayload.weakestAreaScore,
+
+        CompanyRollupAverageTotal: fullPayload.companyRollupAverageTotal,
+        TeamRollupAverageTotal: fullPayload.teamRollupAverageTotal,
+        CompanyRollupSummary: fullPayload.companyRollupSummary,
+        TeamRollupSummary: fullPayload.teamRollupSummary,
+
+        currentResultsSummary: fullPayload.currentResultsSummary,
+
+        q1a: fullPayload.q1a,
+        q1b: fullPayload.q1b,
+        q1c: fullPayload.q1c,
+        q2a: fullPayload.q2a,
+        q2b: fullPayload.q2b,
+        q2c: fullPayload.q2c,
+        q2d: fullPayload.q2d,
+        q2e: fullPayload.q2e,
+        q2f: fullPayload.q2f,
+        q3a: fullPayload.q3a,
+        q3b: fullPayload.q3b,
+        q3c: fullPayload.q3c,
+        q4a: fullPayload.q4a,
+        q4b: fullPayload.q4b,
+        q4c: fullPayload.q4c,
+        q4d: fullPayload.q4d,
+        q4e: fullPayload.q4e,
+        q5a: fullPayload.q5a,
+        q5b: fullPayload.q5b,
+        q5c: fullPayload.q5c,
+        q5d: fullPayload.q5d,
+        q5e: fullPayload.q5e,
+        q5f: fullPayload.q5f,
+        q6a: fullPayload.q6a,
+        q6b: fullPayload.q6b,
+        q6c: fullPayload.q6c,
+        q6d: fullPayload.q6d,
+        q6e: fullPayload.q6e,
+        q6f: fullPayload.q6f
+      };
+    }
+
+    function setStatus(message, type) {
+      const box = document.getElementById('save-status');
+      box.textContent = message;
+      box.className = `status-box show ${type || ''}`.trim();
+    }
+
+    function clearStatus() {
+      const box = document.getElementById('save-status');
+      box.textContent = '';
+      box.className = 'status-box';
+    }
+
+    function renderIndividualResults(payload) {
+      const areaScores = payload.areaScores;
+      const strongestWeakest = getStrongestAndWeakestAreas(areaScores);
+
+      document.getElementById('individual-results').innerHTML = `
+        <div class="metric">
+          <h4>Individual Total Score</h4>
+          <div class="value">${payload.totalScore}</div>
+          <div class="pill ${getBand(payload.totalScore, 29).className}">${getBand(payload.totalScore, 29).label}</div>
+        </div>
+
+        <div class="metric">
+          <h4>Answered Count</h4>
+          <div class="value">${payload.answeredCount} / 29</div>
+          <div class="small">All questions need an answer before submitting.</div>
+        </div>
+
+        ${areas.map(area => `
+          <div class="metric">
+            <h4>${area.title}</h4>
+            <div class="value">${areaScores[area.id]} / ${area.max}</div>
+            <div class="pill ${getBand(areaScores[area.id], area.max).className}">${getBand(areaScores[area.id], area.max).label}</div>
+          </div>
+        `).join('')}
+
+        <div class="metric">
+          <h4>Strongest Area</h4>
+          <div class="value" style="font-size:1.1rem;">${strongestWeakest.strongestArea}</div>
+          <div class="small">Score: ${strongestWeakest.strongestAreaScore}</div>
+        </div>
+
+        <div class="metric">
+          <h4>Weakest Area</h4>
+          <div class="value" style="font-size:1.1rem;">${strongestWeakest.weakestArea}</div>
+          <div class="small">Score: ${strongestWeakest.weakestAreaScore}</div>
+        </div>
+      `;
+    }
+
+    function renderSavedSubmissions(submissions) {
+      const root = document.getElementById('saved-submissions');
+
+      if (!submissions.length) {
+        root.innerHTML = 'No submissions yet.';
+        return;
+      }
+
+      root.innerHTML = submissions.map(item => `
+        <div style="padding:12px 0; border-bottom:1px solid #eee;">
+          <strong>${item.name || 'Unnamed'}</strong> — ${item.company || 'No company'}${item.team ? ' / ' + item.team : ''}<br>
+          <span class="small">
+            ${item.submittedAt ? new Date(item.submittedAt).toLocaleString() : 'No timestamp'}
+            | Total: ${item.totalScore}
+            | Strongest: ${item.strongestArea || 'n/a'}
+            | Weakest: ${item.weakestArea || 'n/a'}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function renderAggregates(submissions) {
+      const root = document.getElementById('aggregate-results');
+
+      if (!submissions.length) {
+        root.innerHTML = 'Submit at least one assessment to see company and team scoring.';
+        return;
+      }
+
+      const companyMap = {};
+
+      submissions.forEach(item => {
+        const companyKey = normalizeKey(item.company);
+        if (!companyKey) return;
+
+        if (!companyMap[companyKey]) {
+          companyMap[companyKey] = {
+            name: item.company,
+            submissions: [],
+            teams: {}
+          };
+        }
+
+        companyMap[companyKey].submissions.push(item);
+
+        const teamKey = normalizeKey(item.team);
+        if (teamKey) {
+          if (!companyMap[companyKey].teams[teamKey]) {
+            companyMap[companyKey].teams[teamKey] = {
+              name: item.team,
+              submissions: []
+            };
+          }
+          companyMap[companyKey].teams[teamKey].submissions.push(item);
+        }
+      });
+
+      const companyBlocks = Object.values(companyMap).map(company => {
+        const companyAvg = average(company.submissions.map(s => Number(s.totalScore || 0)));
+        const companyAreaAverages = areas.map(area => {
+          const avg = average(company.submissions.map(s => Number((s.areaScores && s.areaScores[area.id]) || 0)));
+          return `<li>${area.title}: <strong>${avg.toFixed(2)} / ${area.max}</strong></li>`;
+        }).join('');
+
+        const teamsHtml = Object.values(company.teams).length
+          ? Object.values(company.teams).map(team => {
+              const teamAvg = average(team.submissions.map(s => Number(s.totalScore || 0)));
+              const teamAreas = areas.map(area => {
+                const avg = average(team.submissions.map(s => Number((s.areaScores && s.areaScores[area.id]) || 0)));
+                return `<li>${area.title}: <strong>${avg.toFixed(2)} / ${area.max}</strong></li>`;
+              }).join('');
+
+              return `
+                <div class="metric" style="margin-top:12px;">
+                  <h4>Team: ${team.name}</h4>
+                  <div class="value">${teamAvg.toFixed(2)}</div>
+                  <div class="small">Average team total score</div>
+                  <ul class="compact">${teamAreas}</ul>
+                </div>
+              `;
+            }).join('')
+          : '<div class="small" style="margin-top:8px;">No teams identified yet for this company.</div>';
+
+        return `
+          <div style="border:1px solid #eee; border-radius:14px; padding:16px; margin-bottom:16px; background:#fafafa;">
+            <h3 style="margin-top:0;">${company.name}</h3>
+            <div class="metric">
+              <h4>Company Average Total Score</h4>
+              <div class="value">${companyAvg.toFixed(2)}</div>
+              <div class="small">Based on ${company.submissions.length} submission(s)</div>
+              <ul class="compact">${companyAreaAverages}</ul>
+            </div>
+            ${teamsHtml}
+          </div>
+        `;
+      });
+
+      root.innerHTML = companyBlocks.join('');
+    }
+
+    function updateAllViews() {
+      const payload = getCurrentPayload();
+
+      document.getElementById('current-score').textContent = payload.totalScore;
+      document.getElementById('answered-count').textContent = payload.answeredCount;
+
+      renderIndividualResults(payload);
+
+      const submissions = loadSaved();
+      renderSavedSubmissions(submissions);
+      renderAggregates(submissions);
+    }
+
+    async function sendToZapier(payload) {
+      const formData = new URLSearchParams();
+
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value ?? '');
+      });
+
+      const response = await fetch(ZAPIER_WEBHOOK_URL, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook failed with status ${response.status}`);
+      }
+
+      return response;
+    }
+
+    document.getElementById('submit-assessment').addEventListener('click', async () => {
+      clearStatus();
+
+      const submitButton = document.getElementById('submit-assessment');
+      const fullPayload = getCurrentPayload();
+      const webhookPayload = getWebhookPayload(fullPayload);
+
+      if (!fullPayload.name) {
+        alert('Please add a name before submitting the assessment.');
+        return;
+      }
+
+      if (!fullPayload.company) {
+        alert('Please add a company name before submitting the assessment.');
+        return;
+      }
+
+      if (!fullPayload.email) {
+        alert('Please add an email address before submitting the assessment.');
+        return;
+      }
+
+      if (fullPayload.answeredCount !== 29) {
+        alert('Please answer all 29 questions before submitting the assessment.');
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+
+      const submissions = loadSaved();
+      submissions.push(fullPayload);
+      saveAll(submissions);
+
+      try {
+        await sendToZapier(webhookPayload);
+        setStatus('Assessment submitted successfully and saved locally for rollups.', 'success');
+      } catch (err) {
+        console.warn('Zapier webhook send failed', err);
+        setStatus('Assessment was saved locally, but the Zapier webhook failed. Check Zapier and try again.', 'error');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Assessment';
+      }
+
+      updateAllViews();
+    });
+
+    document.getElementById('reset-current').addEventListener('click', clearCurrentForm);
+
+    document.getElementById('clear-all').addEventListener('click', () => {
+      if (!confirm('Clear all saved local submissions from this browser?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      clearStatus();
+      updateAllViews();
+    });
+
+    migrateAndCleanupSavedDataOnce();
+    renderAssessment();
+    refreshButtons();
+    updateAllViews();
+  </script>
+</body>
+</html>
